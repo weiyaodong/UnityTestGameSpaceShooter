@@ -69,7 +69,10 @@
     <Compile Include="Assets\Scripts\BackgroundMovement.cs" />
     <Compile Include="Assets\Scripts\BoundaryDestroy.cs" />
     <Compile Include="Assets\Scripts\ControlPlayer.cs" />
+    <Compile Include="Assets\Scripts\CreateEnemyBolts.cs" />
     <Compile Include="Assets\Scripts\DestroyByContact.cs" />
+    <Compile Include="Assets\Scripts\DestroyByTime.cs" />
+    <Compile Include="Assets\Scripts\EnemyBoltDestroyed.cs" />
     <Compile Include="Assets\Scripts\GameController.cs" />
     <Compile Include="Assets\Scripts\Mover.cs" />
     <Compile Include="Assets\Scripts\RandomRotator.cs" />
