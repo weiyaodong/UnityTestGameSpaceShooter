@@ -12,42 +12,76 @@ public class Boundary
 
 public class ControlPlayer : MonoBehaviour {
 
-	public AudioSource shooting_sound;
-	public GameObject player_explosion;
-	public GameObject bolt;
-	
-	public float default_health_point = 10f;
+	public AudioSource	shooting_sound;
+	public GameObject	player_explosion;
+	public GameObject	bolt;
 
-	public float default_asteroid_damage = 4f;
-	public float default_bolt_damage = 1f;
+	public	float	default_asteroid_damage = 4f;
+	public	float	default_bolt_damage = 1f;
+	private float	default_bolt_speed = 20f;
 
-	private float default_bolt_speed = 20f;
+	private float	default_health_point = 10f;	
+	private float	default_speed = 3.0f;
+	private float	default_rotate_angle = 6f;
+	private float	default_fire_rate = 2.0f;
+	private int		default_level = 8;
+	private int		default_ultimate = 2;
 
-	public float default_speed = 3.0f;
-	public float fire_rate = 2f;
-	public int maximum_level = 8;
+	private float	speed;
+	private float	fire_rate;
+	private int		shooting_kind;	
+	private float	health_point;
+	private int		ultimate;
+
+	private int		shooting_level;
+	private int		health_level;
+	private int		speed_level;
+	private int		fire_rate_level;
+	private int		shooting_speed_level;
+	private int		ultimate_level;
+	private int		damage_level;
+
+	public	int		maximum_level = 8;
+	public	int		maximum_ultimate = 5;
 
 	private float last_time;
-	private float current_health_point;
-	private int level = 3;
-	public float rotate_angle = 6;
-
 	public Boundary boundary;
 	
 		
-	const int default_shooting_kind = 2;
+	const int default_shooting_kind = 1;
 	const int grape_shoot = 1;
 	const int prallel_shoot = 2;
-	
-	private int shooting_kind;
+
+	const int SHOOTING_KIND		= 0;
+	const int HEALTH_POINT		= 1; 
+	const int FIRE_RATE			= 2;
+	const int SHOOTING_SPEED	= 3;
+	const int SPEED				= 4;
+	const int SHOOTING			= 5;
+	const int ULTIMATE			= 6;
+	const int DAMAGE			= 7;
 
 
 	
 	void Start()
 	{
 		last_time = Time.time;
-		shooting_kind = default_shooting_kind;
-		current_health_point = default_health_point;
+
+		shooting_kind   =	default_shooting_kind;
+		health_point    =	default_health_point;
+		fire_rate       =	default_fire_rate;
+		ultimate        =	default_ultimate;
+		speed			=	default_speed;
+		
+		health_level			= default_level;
+		shooting_level			= default_level;
+		fire_rate_level			= default_level;
+		speed_level				= default_level;
+		ultimate_level			= default_level;
+		shooting_speed_level	= default_level;
+		damage_level			= default_level;
+
+		
 	}
 
 	void Movement()
@@ -72,7 +106,7 @@ public class ControlPlayer : MonoBehaviour {
 					  Mathf.Clamp(gameObject.GetComponent<Rigidbody>().position.z, boundary.zMin, boundary.zMax)
 				  );
 		gameObject.GetComponent<Rigidbody>().rotation =
-			Quaternion.Euler(0.0f, 0.0f, gameObject.GetComponent<Rigidbody>().velocity.x * -rotate_angle);
+			Quaternion.Euler(0.0f, 0.0f, gameObject.GetComponent<Rigidbody>().velocity.x * -default_rotate_angle);
 
 	}
 	
@@ -147,13 +181,13 @@ public class ControlPlayer : MonoBehaviour {
 			if (shooting_kind == grape_shoot)
 			{
 				//generate_a_prallel_bolt();
-				int temp_level = level * 2 - 1;
+				int temp_level = shooting_level * 2 - 1;
 				float total_angle = 80f * (temp_level) / (temp_level + 1f);
 				generate_bolts_as_grape_shots(-0.5f * total_angle, 0.5f * total_angle, temp_level);
 			}
 			else if (shooting_kind == prallel_shoot)
 			{
-				generate_bolts_as_prallel_shots(level);
+				generate_bolts_as_prallel_shots(shooting_level);
 			}
 		}
 	}
@@ -162,7 +196,7 @@ public class ControlPlayer : MonoBehaviour {
 
 	void Update()
 	{
-		if (Input.GetKey(KeyCode.F))
+		//if (Input.GetKey(KeyCode.F))
 		{
 			shoot_bolts();
 			
@@ -175,22 +209,50 @@ public class ControlPlayer : MonoBehaviour {
 		Movement();
 	}
 
+
+
 	void OnTriggerEnter(Collider other)
 	{
 		if(other.tag == "asteroid")
 		{
-			current_health_point -= default_asteroid_damage;
+			health_point -= default_asteroid_damage;
 		}
-			if(other.tag == "enemy_bolt")
+		else if(other.tag == "enemy_bolt")
 		{
-			current_health_point -= default_bolt_damage;
+			health_point -= default_bolt_damage;
+		}
+		else if(other.tag == "speed_upgrade")
+		{
+			//upgrade(SPEED);
 		}
 
-		if(current_health_point < 0f)
+		if(health_point < 0f)
 		{
 			Instantiate(player_explosion, transform.position, transform.rotation);
 			Destroy(gameObject);
 		}
 	}
-	
+	/*
+	void upgrade(int upgrade_kind)
+	{
+		switch(upgrade_kind)
+		{
+			case SPEED:
+				if(speed_level != maximum_level)
+				{
+					speed_level++;
+					speed += 1.5f;
+				}
+				break;
+			case SHOOTING:
+				if(shooting_level != maximum_level)
+				{
+					shooting_level++;
+				}
+				break;
+			/*case FIRE_RATE:
+				if()
+		}
+	}
+*/
 }
