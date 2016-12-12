@@ -17,6 +17,11 @@ public class CreateEnemyBolts : MonoBehaviour {
 
 	void Start()
 	{
+		create();
+	}
+
+	void create()
+	{
 		shooting_delay = 1.0f / shooting_rate;
 		StartCoroutine(create_bolts());
 	}

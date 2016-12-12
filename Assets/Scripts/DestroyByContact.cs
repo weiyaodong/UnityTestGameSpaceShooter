@@ -4,7 +4,7 @@ using System.Collections;
 public class DestroyByContact : MonoBehaviour {
 
 	public float total_health_point = 20;
-	public float damage = 1;
+	public float asteroid_damage = 1;
 
 	private float current_health_point;
 
@@ -32,7 +32,7 @@ public class DestroyByContact : MonoBehaviour {
 		}
 		else if(other.tag == "bolt")
 		{
-			current_health_point -= damage;
+			current_health_point -= other.GetComponent<BoltController>().get_damage();
 			Destroy(other.gameObject);
 			if (current_health_point < 0f)
 			{

@@ -10,39 +10,41 @@ public class Boundary
 	public float xMax;
 }
 
-public class ControlPlayer : MonoBehaviour {
+public class PlayerController : MonoBehaviour {
 
 	public AudioSource	shooting_sound;
 	public GameObject	player_explosion;
 	public GameObject	bolt;
 
-	public	float	default_asteroid_damage = 4f;
-	public	float	default_bolt_damage = 1f;
+	private	float	default_bolt_damage = 1f;
 	private float	default_bolt_speed = 20f;
 
 	private float	default_health_point = 10f;	
-	private float	default_speed = 3.0f;
+	private float	default_speed = 5.0f;
 	private float	default_rotate_angle = 6f;
-	private float	default_fire_rate = 2.0f;
-	private int		default_level = 8;
+	private float	default_fire_rate = 3.0f;
+	private int		default_level = 2;
 	private int		default_ultimate = 2;
+
 
 	private float	speed;
 	private float	fire_rate;
 	private int		shooting_kind;	
 	private float	health_point;
 	private int		ultimate;
+	private float	bolt_damage;
+	private float	bolt_speed;
 
 	private int		shooting_level;
 	private int		health_level;
 	private int		speed_level;
 	private int		fire_rate_level;
-	private int		shooting_speed_level;
+	private int		bolt_speed_level;
 	private int		ultimate_level;
 	private int		damage_level;
 
 	public	int		maximum_level = 8;
-	public	int		maximum_ultimate = 5;
+	//public	int		maximum_ultimate = 5;
 
 	private float last_time;
 	public Boundary boundary;
@@ -72,14 +74,16 @@ public class ControlPlayer : MonoBehaviour {
 		fire_rate       =	default_fire_rate;
 		ultimate        =	default_ultimate;
 		speed			=	default_speed;
+		bolt_speed		=	default_bolt_speed;
+		bolt_damage		=	default_bolt_damage;
 		
-		health_level			= default_level;
-		shooting_level			= default_level;
-		fire_rate_level			= default_level;
-		speed_level				= default_level;
-		ultimate_level			= default_level;
-		shooting_speed_level	= default_level;
-		damage_level			= default_level;
+		health_level		=	default_level;
+		shooting_level		=	default_level;
+		fire_rate_level		=	default_level;
+		speed_level			=	default_level;
+		ultimate_level		=	default_level;
+		bolt_speed_level	=	default_level;
+		damage_level		=	default_level;
 
 		
 	}
@@ -110,37 +114,28 @@ public class ControlPlayer : MonoBehaviour {
 
 	}
 	
-	void generate_a_bolt(float angle)
+	void generate_a_bolt(float angle = 0)
 	{
-		GameObject current_bolt = Instantiate(bolt, transform.position, transform.rotation) as GameObject;
+		Vector3 current_position = transform.position;
+		GameObject current_bolt = Instantiate(bolt, current_position, transform.rotation) as GameObject;
 
-		float default_speed = default_bolt_speed;
-
-		Vector3 direction = gameObject.GetComponent<Transform>().forward;
-
-		float temp_x = direction.x;
-		float temp_z = direction.z;
-
-		direction.y = 0;
-		direction.x = temp_x * Mathf.Cos(angle * Mathf.PI / 180f) - temp_z * Mathf.Sin(angle * Mathf.PI / 180f);
-		direction.z = temp_x * Mathf.Sin(angle * Mathf.PI / 180f) + temp_z * Mathf.Cos(angle * Mathf.PI / 180f);
-
-		current_bolt.GetComponent<Transform>().eulerAngles = new Vector3(0f, -angle, 0f);
-		current_bolt.GetComponent<Rigidbody>().velocity = direction * default_speed;
+		current_bolt.GetComponent<BoltController>().set_bolt_damage(bolt_damage);
+		current_bolt.GetComponent<BoltController>().set_bolt_kind(1);
+		current_bolt.GetComponent<BoltController>().set_speed(bolt_speed);
+		current_bolt.GetComponent<BoltController>().set_bolt(angle);
 	}
 
 	void generate_a_prallel_bolt(float delta_x = 0)
 	{
 		Vector3 current_position = transform.position;
-
 		current_position.x += delta_x;
-
 		GameObject current_bolt = Instantiate(bolt, current_position, transform.rotation) as GameObject;
 
-		float default_speed = default_bolt_speed;
+		current_bolt.GetComponent<BoltController>().set_bolt_damage(bolt_damage);
+		current_bolt.GetComponent<BoltController>().set_bolt_kind(2);
+		current_bolt.GetComponent<BoltController>().set_speed(bolt_speed);
+		current_bolt.GetComponent<BoltController>().set_bolt(delta_x);
 
-		Vector3 direction = gameObject.GetComponent<Transform>().forward;
-		current_bolt.GetComponent<Rigidbody>().velocity = direction * default_speed;
 	}
 
 	void generate_bolts_as_grape_shots(float start_angle, float end_angle, int total_number)
@@ -177,12 +172,15 @@ public class ControlPlayer : MonoBehaviour {
 		if (Time.time - last_time > ping_time)
 		{
 			last_time = Time.time;
-			//shooting_sound.Play();
-			if (shooting_kind == grape_shoot)
+			if(shooting_level == 1)
+			{
+				generate_a_bolt();
+			}
+			else if (shooting_kind == grape_shoot)
 			{
 				//generate_a_prallel_bolt();
 				int temp_level = shooting_level * 2 - 1;
-				float total_angle = 80f * (temp_level) / (temp_level + 1f);
+				float total_angle = 80f * (temp_level) / (temp_level + 4f);
 				generate_bolts_as_grape_shots(-0.5f * total_angle, 0.5f * total_angle, temp_level);
 			}
 			else if (shooting_kind == prallel_shoot)
@@ -198,9 +196,10 @@ public class ControlPlayer : MonoBehaviour {
 	{
 		//if (Input.GetKey(KeyCode.F))
 		{
+
 			shoot_bolts();
 			
-			//generate_a_prallel_bolt();
+			//generate_a_bolt(0);
 		}
 	}
 
@@ -209,17 +208,20 @@ public class ControlPlayer : MonoBehaviour {
 		Movement();
 	}
 
-
+	void receive_damage(Collider other)
+	{
+		
+	}
 
 	void OnTriggerEnter(Collider other)
 	{
 		if(other.tag == "asteroid")
 		{
-			health_point -= default_asteroid_damage;
+			health_point -= other.GetComponent<AsteroidController>().get_damage();
 		}
 		else if(other.tag == "enemy_bolt")
 		{
-			health_point -= default_bolt_damage;
+			health_point -= other.GetComponent<EnemyBoltController>().get_damage();
 		}
 		else if(other.tag == "speed_upgrade")
 		{
@@ -232,7 +234,7 @@ public class ControlPlayer : MonoBehaviour {
 			Destroy(gameObject);
 		}
 	}
-	/*
+	
 	void upgrade(int upgrade_kind)
 	{
 		switch(upgrade_kind)
@@ -250,9 +252,39 @@ public class ControlPlayer : MonoBehaviour {
 					shooting_level++;
 				}
 				break;
-			/*case FIRE_RATE:
-				if()
+			case FIRE_RATE:
+				if(fire_rate_level != maximum_level)
+				{
+					fire_rate_level++;
+				}
+				break;
+			case DAMAGE:
+				if(damage_level != maximum_level)
+				{
+					damage_level++;
+				}
+				break;
+			case HEALTH_POINT:
+				if(health_level != maximum_level)
+				{
+					health_level++;
+				}
+				break;
+			case ULTIMATE:
+				if(ultimate_level != maximum_level)
+				{
+					ultimate_level++;
+				}
+				break;
+			case SHOOTING_SPEED:
+				if(bolt_speed_level != maximum_level)
+				{
+					bolt_speed_level++;
+				}
+				break;
+			default:
+				break;
 		}
 	}
-*/
+
 }
