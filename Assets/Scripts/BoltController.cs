@@ -26,7 +26,7 @@ public class BoltController : MonoBehaviour {
 		}
 	}
 	
-	public void set_speed(float _speed)
+	public void set_speed(float _speed = 10f)
 	{
 		bolt_speed = _speed;
 	}
@@ -62,11 +62,11 @@ public class BoltController : MonoBehaviour {
 			float temp_x = direction.x;
 			float temp_z = direction.z;
 
-			direction.y = 0;
+			//direction.y = 0;
 			direction.x = temp_x * Mathf.Cos(angle * Mathf.PI / 180f) - temp_z * Mathf.Sin(angle * Mathf.PI / 180f);
 			direction.z = temp_x * Mathf.Sin(angle * Mathf.PI / 180f) + temp_z * Mathf.Cos(angle * Mathf.PI / 180f);
 
-			gameObject.GetComponent<Transform>().eulerAngles = new Vector3(0f, -angle, 0f);
+			transform.eulerAngles = new Vector3(0f, -angle, 0f);
 			gameObject.GetComponent<Rigidbody>().velocity = direction * default_speed;
 		}
 		else if(bolt_kind == 2)
