@@ -23,7 +23,7 @@ public class EnemyBoltController : MonoBehaviour {
 		return enemy_bolt_damage;
 	}
 
-	public void set_damage(float _damage)
+	public void set_bolt_damage(float _damage)
 	{
 		enemy_bolt_damage = _damage;
 	}
@@ -54,7 +54,7 @@ public class EnemyBoltController : MonoBehaviour {
 			float angle = var;
 			float default_speed = bolt_speed;
 
-			Vector3 direction = gameObject.GetComponent<Transform>().forward;
+			Vector3 direction = -gameObject.GetComponent<Transform>().forward;
 
 			float temp_x = direction.x;
 			float temp_z = direction.z;
@@ -74,12 +74,13 @@ public class EnemyBoltController : MonoBehaviour {
 			current_position.x += delta_x;
 			float default_speed = bolt_speed;
 
-			Vector3 direction = gameObject.GetComponent<Transform>().forward;
+			Vector3 direction = -gameObject.GetComponent<Transform>().forward;
+			gameObject.GetComponent<Transform>().position = current_position;
 			gameObject.GetComponent<Rigidbody>().velocity = direction * default_speed;
 		}
 	}
 
-
+	/*
 	void OnTriggerEnter(Collider other)
 	{
 		if(other.tag == "Player")
@@ -87,5 +88,5 @@ public class EnemyBoltController : MonoBehaviour {
 			Destroy(gameObject);
 		}
 	}
-
+	*/
 }

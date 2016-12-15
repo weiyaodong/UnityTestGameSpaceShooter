@@ -14,20 +14,21 @@ public class PlayerController : MonoBehaviour {
 
 	public AudioSource	shooting_sound;
 	public GameObject	player_explosion;
+	public GameObject	enemy_bolt_explosion;
 	public GameObject	bolt;
 	private float	default_rotate_angle	= 6f;
 
 	private	float	default_bolt_damage		= 1f;
 	private float	default_bolt_speed		= 10f;
-	private float	default_health_point	= 5f;	
+	private float	default_health_point	= 3f;	
 	private float	default_speed			= 6.0f;	
 	private float	default_fire_rate		= 3.0f;
 
 	private int		default_ultimate		= 2;
 
-	private int		default_level			= 5;
+	private int		default_level			= 0;
 
-	private float	health_per_level		= 2f;
+	private float	health_per_level		= 1f;
 	private float	fire_rate_per_level		= 1f;
 	private float	speed_per_level			= 1f;
 	private float	bolt_speed_per_level	= 3f;
@@ -49,8 +50,8 @@ public class PlayerController : MonoBehaviour {
 	private int		bolt_speed_level;
 	private int		damage_level;
 
-	public	int		maximum_level = 5;
-	//public	int		maximum_ultimate = 5;
+	public	int		maximum_level = 6;
+
 
 	private float last_time;
 	public Boundary boundary;
@@ -82,8 +83,14 @@ public class PlayerController : MonoBehaviour {
 		speed_level			=	default_level;
 		bolt_speed_level	=	default_level;
 		damage_level		=	default_level;
-
+		
 		set_data();
+		reset_health_point();
+	}
+
+	void reset_health_point()
+	{
+		health_point = maximum_health_point;
 	}
 
 	void Movement()
@@ -112,29 +119,23 @@ public class PlayerController : MonoBehaviour {
 
 	}
 	
-	void generate_a_bolt(float angle = 0)
+	void generate_a_bolt(float parameter = 0, int kind = 1)
 	{
 		Vector3 current_position = transform.position;
 		GameObject current_bolt = Instantiate(bolt, current_position, transform.rotation) as GameObject;
 
+		if (kind == 1)
+		{			
+			//nothing need to be done
+		}
+		else if(kind == 2)
+		{			
+			current_position.x += parameter;
+		}
 		current_bolt.GetComponent<BoltController>().set_bolt_damage(bolt_damage);
-		current_bolt.GetComponent<BoltController>().set_bolt_kind(1);
+		current_bolt.GetComponent<BoltController>().set_bolt_kind(kind);
 		current_bolt.GetComponent<BoltController>().set_speed(bolt_speed);
-		current_bolt.GetComponent<BoltController>().set_bolt(angle);
-	}
-
-	void generate_a_prallel_bolt(float delta_x = 0)
-	{
-		
-		Vector3 current_position = transform.position;
-		current_position.x += delta_x;
-		GameObject current_bolt = Instantiate(bolt, current_position, transform.rotation) as GameObject;
-
-		current_bolt.GetComponent<BoltController>().set_bolt_damage(bolt_damage);
-		current_bolt.GetComponent<BoltController>().set_bolt_kind(2);
-		current_bolt.GetComponent<BoltController>().set_speed(bolt_speed);
-		current_bolt.GetComponent<BoltController>().set_bolt(delta_x);
-
+		current_bolt.GetComponent<BoltController>().set_bolt(parameter);
 	}
 
 	void generate_bolts_as_grape_shots(float start_angle, float end_angle, int total_number)
@@ -143,7 +144,7 @@ public class PlayerController : MonoBehaviour {
 
 		for (int i = 0; i < total_number; i++)
 		{
-			generate_a_bolt(start_angle + (float)i * differ);
+			generate_a_bolt(start_angle + (float)i * differ, 1);
 		}
 	
 	}
@@ -152,7 +153,7 @@ public class PlayerController : MonoBehaviour {
 	{
 		if (total_number == 1)
 		{
-			generate_a_prallel_bolt(0);
+			generate_a_bolt();
 			return;
 		}
 		float total_length = 3.0f * (total_number) / (total_number + 4f);
@@ -161,7 +162,7 @@ public class PlayerController : MonoBehaviour {
 
 		for (int i = 0; i < total_number; i++)
 		{
-			generate_a_prallel_bolt(start_pos + i * delta_x);
+			generate_a_bolt(start_pos + i * delta_x, 2);
 		}
 
 	}
@@ -217,7 +218,9 @@ public class PlayerController : MonoBehaviour {
 		}
 		else if(other.tag == "enemy_bolt")
 		{
-			health_point -= other.GetComponent<EnemyBoltController>().get_damage();
+			health_point -= other.GetComponent<EnemyBoltController>().get_damage();			
+			Instantiate(enemy_bolt_explosion, other.transform.position, other.transform.rotation);
+			Destroy(other.gameObject);
 		}
 		else if(other.tag == "upgrade")
 		{

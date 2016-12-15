@@ -5,9 +5,9 @@ public class GameController : MonoBehaviour {
 
 	public GameObject hazard;
 
-	public float start_wait_time = 1;
-	public float spawn_wait_time = 1;
-	public float wave_wait_time = 5;
+	public float start_wait_time	= 3f;
+	public float spawn_wait_time	= 1f;
+	public float wave_wait_time		= 5f;
 	public int wave_count;
 
 	public Vector3 spawn_value;

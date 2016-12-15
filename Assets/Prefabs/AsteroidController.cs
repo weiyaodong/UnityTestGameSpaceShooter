@@ -72,8 +72,6 @@ public class AsteroidController : MonoBehaviour {
 	void work()
 	{
 		Vector3 direction = gameObject.GetComponent<Transform>().forward;
-		//Vector3 temp_v = gameObject.GetComponent<Rigidbody>().velocity;
-		//temp_v.z = speed;
 		gameObject.GetComponent<Rigidbody>().velocity = direction * (-speed);
 	}
 
@@ -82,7 +80,7 @@ public class AsteroidController : MonoBehaviour {
 
 		set_damage(); last_time = Time.time;
 		set_total_health();
-		set_rotation();
+		//set_rotation();
 		work();
 	}
 	
