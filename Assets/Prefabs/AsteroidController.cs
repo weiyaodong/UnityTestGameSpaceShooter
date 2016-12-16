@@ -9,20 +9,32 @@ public class AsteroidController : MonoBehaviour {
 	private float	asteroid_damage;
 	private float	last_time;
 	private float	rotate_speed			= 5f;
-	private float	speed					= 1f;
+	private float	speed					= 0.5f;
 
 	const	int		default_moving_kind		= 0;
 	const	int		keep_moving_forward		= 0;
 	const	int		turn_up_and_stay_still	= 1;
 	const	int		cut_in_from_side		= 2;
 
-	const	float	default_stay_start_time = 3;
+	const	float	default_stay_start_time = 8;
 
 	private int		moving_kind				= default_moving_kind;
 
 	private int		contain;
 	private bool	need_stay				= false;
 	private float	stay_start_time			= default_stay_start_time;
+
+	private float	current_time;
+
+	public void set_speed(float _speed)
+	{
+		speed = _speed;
+	}
+
+	public float get_speed()
+	{
+		return speed;
+	}
 
 	public void set_moving_kind(int _moving_kind)
 	{
@@ -74,7 +86,7 @@ public class AsteroidController : MonoBehaviour {
 
 	private void check_health()
 	{
-		if(total_health < 0f)
+		if(total_health <= 0f)
 		{
 			destroy();
 		}
@@ -120,18 +132,20 @@ public class AsteroidController : MonoBehaviour {
 	}
 
 	// Use this for initialization
-	void Start () {
+	public void start () {
 
-		set_damage(); last_time = Time.time;
+		set_damage();
+		last_time = Time.time;
 		set_total_health();
 		//set_rotation();
+		current_time = Time.time;
 		work();
 	}
 	
 	// Update is called once per frame
 	void Update () {
 		
-		if(need_stay && Time.time > stay_start_time)
+		if(need_stay && Time.time - current_time > stay_start_time)
 		{
 			need_stay = false;
 			gameObject.GetComponent<Rigidbody>().velocity = new Vector3(0, 0, 0);

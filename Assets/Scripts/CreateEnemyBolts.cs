@@ -11,15 +11,15 @@ public class CreateEnemyBolts : MonoBehaviour {
 	private float	enemy_bolt_damage	= 1f;
 
 	private int		total_bolts			= 20;
-	private float	shooting_rate		= 0.7f;
+	private float	shooting_rate		= 3f;
 
-	private float	start_wait_time		= 1f;
-	private float	wave_wait_time		= 4f;
-	private int		wave_count			= 5;
+	private float	start_wait_time		= 1.5f;
+	private float	wave_wait_time		= 1.5f;
+	private int		wave_count			= 3;
 
-	private int		shooting_kind;
+	private int		shooting_kind		= default_shooting_kind;
 
-	private int		default_shooting_kind = 2;
+	const	int		default_shooting_kind = 0;
 
 	const	int		SINGLE_SHOOT		= 0;
 	const	int		DOUBLE_SHOOT		= 1;
@@ -84,12 +84,11 @@ public class CreateEnemyBolts : MonoBehaviour {
 		return shooting_num;
 	}
 
-	void Start()
+	public void start()
 	{
-		shooting_kind = default_shooting_kind;
+		//shooting_kind = default_shooting_kind;
 		Player = GameObject.FindWithTag("Player");
-		create();
-		
+		create();		
 	}
 
 	void create()
