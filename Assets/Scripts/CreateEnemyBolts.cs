@@ -4,7 +4,7 @@ using System.Collections;
 public class CreateEnemyBolts : MonoBehaviour {
 
 	public	GameObject	enemy_bolt;
-	private GameObject	Player;
+	private	GameObject	Player;
 	public	GameObject	container;
 
 	private float	enemy_bolt_speed	= 4f;
@@ -32,6 +32,26 @@ public class CreateEnemyBolts : MonoBehaviour {
 	private int		shooting_num		= 15;
 
 	private float shooting_delay;
+
+	public void set_bolt_damage(float _damage = 1f)
+	{
+		enemy_bolt_damage = _damage;
+	}
+
+	public float get_bolt_damage()
+	{
+		return enemy_bolt_damage;
+	}
+
+	public void set_bolt_speed(float _speed)
+	{
+		enemy_bolt_speed = _speed;
+	}
+
+	public float get_bolt_speed()
+	{
+		return enemy_bolt_speed;
+	}
 
 	public void set_shooting_kind(int _shooting_kind)
 	{

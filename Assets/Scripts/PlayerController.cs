@@ -85,7 +85,13 @@ public class PlayerController : MonoBehaviour {
 		damage_level		=	default_level;
 		
 		set_data();
+		reset_ultimate();
 		reset_health_point();
+	}
+
+	void reset_ultimate()
+	{
+		ultimate = default_ultimate;
 	}
 
 	void reset_health_point()

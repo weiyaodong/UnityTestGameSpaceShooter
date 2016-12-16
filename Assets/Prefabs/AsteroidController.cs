@@ -5,12 +5,46 @@ public class AsteroidController : MonoBehaviour {
 
 	public GameObject asteroid_explosion;
 
-	private float total_health;
-	private float asteroid_damage;
-	private float last_time;
-	private float rotate_speed = 5f;
-	private float speed = 1f;
+	private float	total_health;
+	private float	asteroid_damage;
+	private float	last_time;
+	private float	rotate_speed			= 5f;
+	private float	speed					= 1f;
+
+	const	int		default_moving_kind		= 0;
+	const	int		keep_moving_forward		= 0;
+	const	int		turn_up_and_stay_still	= 1;
+	const	int		cut_in_from_side		= 2;
+
+	const	float	default_stay_start_time = 3;
+
+	private int		moving_kind				= default_moving_kind;
+
+	private int		contain;
+	private bool	need_stay				= false;
+	private float	stay_start_time			= default_stay_start_time;
+
+	public void set_moving_kind(int _moving_kind)
+	{
+		moving_kind = _moving_kind;
+		work();
+	}
+
+	public int get_moving_kind()
+	{
+		return moving_kind;
+	}
 	
+	public void set_contain(int _contain)
+	{
+		contain = _contain;
+	}
+
+	public int get_contain()
+	{
+		return contain;
+	}
+
 
 	public void set_total_health(float set_health = 3)
 	{
@@ -71,8 +105,18 @@ public class AsteroidController : MonoBehaviour {
 
 	void work()
 	{
-		Vector3 direction = gameObject.GetComponent<Transform>().forward;
-		gameObject.GetComponent<Rigidbody>().velocity = direction * (-speed);
+		if (moving_kind == keep_moving_forward)
+		{
+			Vector3 direction = gameObject.GetComponent<Transform>().forward;
+			gameObject.GetComponent<Rigidbody>().velocity = direction * (-speed);
+		}
+		else if(moving_kind == turn_up_and_stay_still)
+		{
+			need_stay = true;
+			stay_start_time = default_stay_start_time;
+			Vector3 direction = gameObject.GetComponent<Transform>().forward;
+			gameObject.GetComponent<Rigidbody>().velocity = direction * (-speed);
+		}
 	}
 
 	// Use this for initialization
@@ -86,6 +130,12 @@ public class AsteroidController : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-	
+		
+		if(need_stay && Time.time > stay_start_time)
+		{
+			need_stay = false;
+			gameObject.GetComponent<Rigidbody>().velocity = new Vector3(0, 0, 0);
+		}
+
 	}
 }
